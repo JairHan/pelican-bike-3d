@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- v2: beak fix -->
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -463,20 +464,23 @@ head.add(M(new THREE.SphereGeometry(0.3, 20, 16), matWhite));
 
 const beak = new THREE.Group();
 beak.position.set(0.28, 0.02, 0);
+beak.rotation.z = -0.04;
 head.add(beak);
-{ // 上喙
-  const upper = M(new THREE.ConeGeometry(0.16, 1.05, 12), matYellow, 0.5, 0.02, 0);
-  upper.rotation.z = -Math.PI / 2;
-  upper.scale.set(1, 1, 0.5);
+{ // 上喙:扁宽的长椭圆喙嘴(宽 > 高)
+  const upper = M(new THREE.SphereGeometry(0.5, 20, 12), matYellow, 0.5, 0.01, 0);
+  upper.scale.set(1.18, 0.17, 0.27);
   beak.add(upper);
+  const nail = M(new THREE.ConeGeometry(0.055, 0.16, 8), toon(0xe07b2a), 1.06, -0.02, 0);
+  nail.rotation.z = -Math.PI / 2 - 0.35;
+  beak.add(nail);
 }
-const beakLower = new THREE.Group();
-beakLower.position.set(0.14, -0.06, 0);
+const beakLower = new THREE.Group(); // 铰合点在喙根,张嘴时喉囊整体绕此下摆
+beakLower.position.set(0.2, -0.03, 0);
 beak.add(beakLower);
-const pouch = M(new THREE.SphereGeometry(0.3, 16, 12), toon(0xff9440), 0.34, -0.1, 0);
-pouch.scale.set(1.9, 0.75, 0.55);
+const pouch = M(new THREE.SphereGeometry(0.5, 20, 14), toon(0xff9440), 0.42, -0.16, 0);
+pouch.scale.set(0.92, 0.3, 0.235);
 beakLower.add(pouch);
-beakLower.add(M(new THREE.BoxGeometry(0.78, 0.05, 0.18), toon(0xe07b2a), 0.4, 0.02, 0));
+beakLower.add(M(new THREE.BoxGeometry(0.9, 0.045, 0.2), toon(0xe07b2a), 0.48, -0.05, 0));
 
 function makeWing(side) {
   const g = new THREE.Group();
@@ -707,7 +711,7 @@ function animate() {
   head.rotation.y = Math.sin(t * 0.7) * 0.2;
   head.rotation.z = -0.06 * sf;
   beakLower.rotation.z = -(0.15 * sf + Math.max(0, Math.sin(t * 2.2)) * 0.1 * sf);
-  pouch.scale.y = 0.75 * (1 + Math.sin(pedalPhase * 2 + 1) * 0.2 * sf);
+  pouch.scale.y = 0.3 * (1 + Math.sin(pedalPhase * 2 + 1) * 0.2 * sf);
   if (t > nextFlap) { flapT = 0; nextFlap = t + 4 + Math.random() * 5; }
   flapT += dt;
   const flap = Math.exp(-flapT * 1.8) * Math.sin(flapT * 14) * 0.9;
